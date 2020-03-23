@@ -61,7 +61,7 @@ Fix it by using a text editor to edit the file `/etc/resolv.conf`
 
 Reference the same IP as your upstream DNS. Make sure that the IP of your RPi isn't in there. Save the file and exit.
 Make sure to make the file read-only (except for yourself) to prevent DHCP to overwrite it.
-> `sudo chmod 744 /etc/resolv.conf`</br>
+> `sudo chmod 644 /etc/resolv.conf`</br>
 
 
 ## TODO
