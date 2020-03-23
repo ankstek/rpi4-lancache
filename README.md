@@ -14,11 +14,11 @@ After reading a bunch of guides, documentation and forum posts, I have now made 
 #### Disclaimer:
 > I assume you have your RPi up and running and have a terminal windows open (ssh or not, doesn't matter). I won't show you how to setup your Raspberry Pi, there are tons of guides on how to do that. I also assume that you have your external drive mounted under some directory. Again, tons of guides available.
 
-Also, assign a static IP to your RPi in your router. My router is an Asus RT-AC87U and i set the WAN DNS to `1.1.1.1` and the LAN DNS (under the DHCP settings) to the static IP of my RPi. I also told the router to add itself as a DNS in the DHCP request, this is handy during the setup phase but should not be enabled when everything is running. My RPi4 is connected to my router with an ethernet cabel.
+Assign a static IP to your RPi in your router. My router is an Asus RT-AC87U and I set the WAN DNS to `1.1.1.1` and the LAN DNS (under the DHCP settings) to the static IP of my RPi. I also told the router to add itself as a DNS in the DHCP request, this is handy during the setup phase but should not be enabled when everything is running. My RPi4 is connected to my router with an ethernet cabel.
 
 * First install `docker` and `docker-compose` on your RPi.
 * Clone/copy/download the docker compose file to the RPi.
-* Edit the config to your needs, I've commented the `.yaml` file extensivly incase you are unsure what each setting does.
+* Edit the config to your needs, I've commented the `.yaml` file extensivly incase you are unsure what each setting does. Feel free to suggest and share your own environment variables and why you use them!
 * Then it should only be a matter of navigating to the `docker-compose.yaml` file I've provided and running `sudo docker-compose up -d`.
 
 ## Tuning
