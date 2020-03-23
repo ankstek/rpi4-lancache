@@ -1,0 +1,44 @@
+version: "3"
+services:
+  lancache-dns:
+    restart: unless-stopped # If the container crashes, it'll start again automatically
+    image: pegasy/lancachenet_lancache-dns:latest # Pegasy's image of lancache-dns built for RPi
+    environment:
+      - USE_GENERIC_CACHE=true # Default lancache setting, it'll cache every game client
+
+      - LANCACHE_IP=192.168.1.92 # This is the IP that i assigned to my RPi in my router
+
+      - UPSTREAM_DNS=192.168.1.1 # I'm telling it to forward any uncached request to my router,
+                                 # you could use an external DNS provider but my router will respond faster
+                                 # to DNS queries. I can also change the external DNS more easily in my router.
+    ports:
+      - "53:53/udp" # Leave alone, portforwarding from container to host
+        
+  lancache:
+    restart: unless-stopped
+    image: pegasy/lancachenet_monolithic:latest # Pegasy's image of lancache built for RPi
+    environment:
+      - CACHE_DISK_SIZE=1750g # I have a 2TB drive (1.8TB when formatted) use 'm','g' or 't' for the size of the drive in MB, GB or TB
+
+      - NGINX_WORKER_PROCESSES=8 # Default was 16, it caused the disk to thrash a bit too much for me. 8 workers 
+                                 # worked better for me. nginx recomments 1 worker per CPU core, but since they wait a
+                                 # lot for disk and network I/O a few extra doesn't hurt
+      - CACHE_SLICE_SIZE=4m # Default is 1MB, i figured that a bit larger cache slice size is more efficient on a spinning
+                            # harddrive. If your storage is flash based (SSD), then the default 1m could work better
+    volumes:
+      - /media/lancache/cache/data:/data/cache # My harddrive is mounted under /media/lancache
+      - /home/pi/lancache/logs:/data/logs # I wanted to put the logs on the SD-card, they grow a lot in size so when you feel
+                                          # that the lancache works as it should then send the logs to /dev/null
+                                          # When i figure out how to send the access logs to /dev/null and the error logs to
+                                          # The hard drive, then I'll update this guide. I might also set up a cronjob every week
+                                          # to rotate the logs.
+    ports:
+      - "80:80" # Leave alone, portforwarding from container to host
+
+  sniproxy:
+    restart: unless-stopped
+    image: pegasy/lancachenet_sniproxy:latest # Pegasy's image of sniproxy built for RPi
+    environment:
+      - UPSTREAM_DNS=192.168.1.1 # My routers IP, use the same upstream DNS as for the lancache-dns
+    ports:
+      - "443:443" # Leave alone, portforwarding from container to host
