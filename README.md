@@ -47,6 +47,36 @@ It it returns `[OK]` then your lancache server will now have full network access
 
 I'm using [Pegasy's prebuilt RPi lancache images](https://github.com/pegasy/lancachenet_rpi), he has a build script incase you want to build your own images.
 
+## Automatic start on boot
+
+If there's a power outage or similar, a nice thing would be for this thing to start on its own. We can create a service to do this for us.
+
+Create a new file under `/etc/systemd/system`, call it something that's easy to uunderstand what it is. I called mine `docker-compose-lancache.service`. Note that the `.service` file extension is required.
+
+* Create the file: `sudo touch /etc/systemd/system/docker-compose-lancache.service`</br>
+* Open the file with an editor and paste the following: </br>
+
+```
+[Unit]
+Description=Docker Compose LANCache Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/where/the/docker/compose/file/is
+ExecStart=/usr/local/bin/docker-compose up -d
+ExecStop=/usr/local/bin/docker-compose down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
+```
+Make sure the the `WorkingDirectory` points to where the `docker-compose.yaml` file is.
+
+* Enable the service with `sudo systemctl enable docker-compose-lancache`, the same name you gave the service file, without the `.service`
+
 ## Gotchas
 
 * The RPi should not have itself as DNS for it's own request. When starting the docker container and docker needs to pull an image it won't be able to resolve the hostname since it cannot ask it's own dns server since it's not started.
@@ -68,7 +98,6 @@ Make sure to make the file read-only (except for yourself) to prevent DHCP to ov
 Stuff I'd like to setup, but haven't (yet).
 
 * Log rotation
-* Automatic start of containers on boot
 
 ## Credits/sources
 [lancache](https://github.com/lancachenet/monolithic)</br>
